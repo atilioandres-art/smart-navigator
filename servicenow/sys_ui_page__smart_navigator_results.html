@@ -189,8 +189,8 @@ function globalSearch(q){
       else if(data&&data.result&&Array.isArray(data.result)){groups=data.result;}
       groups=groups.filter(function(g){return g.result&&g.result.length>0;});
       renderGroups(groups,q,false);
-    }else if(xhr.status===404||xhr.status===403||xhr.status===405){
-      // Global search API not available — fall back to direct table queries
+    }else if(xhr.status===404||xhr.status===403||xhr.status===405||xhr.status===0){
+      // Global search API not available or blocked — fall back to direct table queries
       fallbackSearch(q);
     }else{
       document.getElementById('results').innerHTML='<div class="empty">Search failed (HTTP '+xhr.status+'). Try again.</div>';
