@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"><title>Smart Navigator</title>
+<!--
+  ServiceNow artifact: sys_ui_page
+  Name: smart_navigator
+  sys_id: 58acb83dcf7bba948ace75c42d851c27
+  Instance: zurichandres.service-now.com
+  Served via: sys_processor (smart_navigator_v2.do)
+
+  This is the main Smart Navigator page HTML/CSS/JS.
+  To deploy: paste content into sys_ui_page.html field on the SN instance.
+-->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f4f6f8;min-height:100vh;font-size:16px}
+.hdr{background:#1d3557;color:#fff;padding:12px 24px;display:flex;align-items:center;gap:10px}
+.hdr h1{font-size:20px;font-weight:600}.hdr small{opacity:.6;font-size:14px}
+.wrap{max-width:820px;margin:24px auto;padding:0 16px}
+.card{background:#fff;border-radius:10px;box-shadow:0 1px 8px rgba(0,0,0,.1);padding:20px;margin-bottom:14px}
+#q{width:100%;font-size:21px;border:2px solid #d1d9e0;border-radius:8px;padding:12px 16px;outline:none;color:#1d2d35;transition:border .15s}
+#q:focus{border-color:#0070d2;box-shadow:0 0 0 3px rgba(0,112,210,.12)}
+.hint{font-size:13px;color:#8c9dab;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{background:#f0f4f8;border:1px solid #d1d9e0;border-radius:20px;padding:6px 14px;font-size:15px;cursor:pointer;color:#2d3f50;white-space:nowrap;transition:all .1s}
+.chip:hover{background:#0070d2;color:#fff;border-color:#0070d2}
+.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a0aab4;padding:10px 0 4px}
+.ri{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e5eaee;border-radius:8px;cursor:pointer;margin-bottom:5px;transition:all .1s}
+.ri:hover,.ri.sel{border-color:#0070d2;background:#f0f7ff}
+.ri-ico{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#f0f4f8}
+.ri-body{flex:1;min-width:0}
+.ri-name{font-size:17px;font-weight:500;color:#1d2d35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-sub{font-size:13px;color:#8c9dab;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-badge{font-size:11px;padding:3px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;font-weight:600}
+.bj{background:#e6f4ea;color:#2e7d32}.bu{background:#e3f2fd;color:#1565c0}
+.bc{background:#fff3e0;color:#e65100}.bk{background:#f3e5f5;color:#6a1b9a}.bm{background:#e8f0fe;color:#3c6bc9}
+.ld{padding:10px 16px;font-size:13px;color:#8c9dab;display:flex;align-items:center;gap:8px}
+.sp{width:14px;height:14px;border:2px solid #d1d9e0;border-top-color:#0070d2;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:28px;color:#8c9dab;font-size:15px}
+.browse-btn{width:100%;background:none;border:1px dashed #cdd5dd;border-radius:8px;padding:9px 16px;font-size:14px;color:#4a6374;cursor:pointer;transition:all .1s;margin-top:4px}
+.browse-btn:hover{background:#f0f4f8;border-color:#0070d2;color:#0070d2}
+.bcat{padding:7px 16px;background:#f8f9fb;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7c93;border-bottom:1px solid #eef0f3;border-top:1px solid #eef0f3;margin-top:4px}
+.bitem{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid #f0f2f5;cursor:pointer;font-size:15px;color:#2d3f50}
+.bitem:hover{background:#eef4fb;color:#0070d2}
+.sig-tag{display:inline-block;background:#e8f5e9;color:#2e7d32;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:4px}
+</style>
+</head>
+<body>
+<div class="hdr"><span style="font-size:22px">&#9889;</span><h1>Smart Navigator</h1><small>Semantic intent detection &bull; Searches modules, records, CIs, users &amp; knowledge in real time</small></div>
+<div class="wrap">
+<div class="card">
+<input id="q" placeholder="Type anything: module, INC0001234, memory issue, deploy server, relationship on Portia..." autocomplete="off" spellcheck="false">
+<div class="hint">&#8593;&#8595; navigate &nbsp;&middot;&nbsp; Enter to open &nbsp;&middot;&nbsp; Detects: record#, names, emails, IPs, keywords &amp; context</div>
+<div id="chips" class="chips"></div>
+</div>
+<div id="results"></div>
+<button class="browse-btn" id="bb" onclick="toggleBrowse()">&#9660; Browse all modules</button>
+<div id="browseDiv" style="background:#fff;border-radius:10px;box-shadow:0 1px 8px rgba(0,0,0,.1);margin-top:4px;display:none;overflow:hidden"></div>
+</div>
+<script>
+(function(){
+var S='sn_snav_v4',U={};
+try{U=JSON.parse(localStorage.getItem(S))||{};}catch(e){}
+
+var CC={'Incident Management':'#e53935','Change Management':'#7b1fa2','Problem Management':'#ef6c00','Service Catalog':'#1565c0','CMDB / Asset':'#2e7d32','Users & Groups':'#283593','Knowledge':'#558b2f','System Admin':'#4e342e','Reporting':'#00695c','Automation':'#6a1b9a','Security':'#b71c1c','Service Levels':'#1a237e'};
+
+// Module list: [id, name, category, url, type, keywords, base_rank]
+var M=[
+['inc-all','All Incidents','Incident Management','incident_list.do','list','incident tickets all inc issue',95],
+['inc-open','Open Incidents','Incident Management','incident_list.do?sysparm_query=active=true','list','open active unresolved',90],
+['inc-mine','My Incidents','Incident Management','incident_list.do?sysparm_query=assigned_to=javascript:gs.getUserID()^active=true','list','my assigned me',92],
+['inc-p1','P1 Critical','Incident Management','incident_list.do?sysparm_query=active=true^priority=1','list','p1 critical severity sev1',80],
+['inc-unassigned','Unassigned Incidents','Incident Management','incident_list.do?sysparm_query=active=true^assigned_to=NULL','list','unassigned queue',75],
+['inc-new','New Incident','Incident Management','incident.do?sys_id=-1','form','create new raise log open',70],
+['chg-all','All Changes','Change Management','change_request_list.do','list','change chg all request',90],
+['chg-open','Open Changes','Change Management','change_request_list.do?sysparm_query=active=true','list','open active',85],
+['chg-mine','My Changes','Change Management','change_request_list.do?sysparm_query=assigned_to=javascript:gs.getUserID()^active=true','list','my assigned',83],
+['chg-emerg','Emergency Changes','Change Management','change_request_list.do?sysparm_query=type=emergency^active=true','list','emergency urgent emc',75],
+['chg-new','New Change','Change Management','change_request.do?sys_id=-1','form','create new raise',68],
+['prb-all','All Problems','Problem Management','problem_list.do','list','problem prb all root cause',85],
+['prb-open','Open Problems','Problem Management','problem_list.do?sysparm_query=active=true','list','open active',80],
+['prb-known','Known Errors','Problem Management','problem_list.do?sysparm_query=known_error=true','list','known error workaround',78],
+['req-all','All Requests','Service Catalog','sc_request_list.do','list','request req all sc service',88],
+['ritm-all','Request Items','Service Catalog','sc_req_item_list.do','list','ritm item catalog request',85],
+['sctask-all','Catalog Tasks','Service Catalog','sc_task_list.do','list','catalog task sctask fulfillment',72],
+['req-mine','My Requests','Service Catalog','sc_request_list.do?sysparm_query=requested_for=javascript:gs.getUserID()','list','my requests',80],
+['cat-home','Service Catalog','Service Catalog','sc_home.do','view','catalog order browse home portal',80],
+['ci-all','All Config Items','CMDB / Asset','cmdb_ci_list.do','list','ci cmdb config item all asset configuration cmdb_ci',95],
+['ci-server','Servers','CMDB / Asset','cmdb_ci_server_list.do','list','server host windows linux cmdb',88],
+['ci-service','Business Services','CMDB / Asset','cmdb_ci_service_list.do','list','business service ci cmdb',85],
+['ci-appl','Applications (CI)','CMDB / Asset','cmdb_ci_appl_list.do','list','application app software ci cmdb',83],
+['ci-computer','Computers','CMDB / Asset','cmdb_ci_computer_list.do','list','computer desktop laptop workstation ci',80],
+['ci-db','Databases (CI)','CMDB / Asset','cmdb_ci_db_instance_list.do','list','database db sql oracle mysql ci',78],
+['ci-network','Network Devices','CMDB / Asset','cmdb_ci_netgear_list.do','list','network router switch firewall ci',76],
+['ci-storage','Storage','CMDB / Asset','cmdb_ci_storage_device_list.do','list','storage san nas disk ci',72],
+['asset-all','All Assets','CMDB / Asset','alm_asset_list.do','list','asset hardware alm all',82],
+['asset-hw','Hardware Assets','CMDB / Asset','alm_hardware_list.do','list','hardware asset laptop server equipment',78],
+['asset-sw','Software Licenses','CMDB / Asset','alm_license_list.do','list','software license asset',74],
+['usr-all','All Users','Users & Groups','sys_user_list.do','list','user users all people staff employee',90],
+['usr-active','Active Users','Users & Groups','sys_user_list.do?sysparm_query=active=true','list','active enabled users',85],
+['usr-groups','User Groups','Users & Groups','sys_user_group_list.do','list','group groups team',88],
+['usr-new','New User','Users & Groups','sys_user.do?sys_id=-1','form','create add new user',65],
+['kb-all','Knowledge Articles','Knowledge','kb_knowledge_list.do','list','knowledge kb article faq all',85],
+['kb-pub','Published Articles','Knowledge','kb_knowledge_list.do?sysparm_query=workflow_state=published','list','published live kb',80],
+['task-mine','My Tasks','Service Catalog','task_list.do?sysparm_query=assigned_to=javascript:gs.getUserID()^active=true','list','my task work assigned',88],
+['sla-breach','Breached SLAs','Service Levels','task_sla_list.do?sysparm_query=has_breached=true','list','sla breach missed failed',82],
+['sla-all','SLA Definitions','Service Levels','contract_sla_list.do','list','sla service level agreement',75],
+['upd-sets','Update Sets','System Admin','sys_update_set_list.do','list','update set deploy transport changeset',90],
+['bg-script','Background Scripts','System Admin','sys_script_fix.do','form','background run execute fix script admin',85],
+['sys-log','System Logs','System Admin','syslog_list.do','list','log error debug system syslog',80],
+['sys-props','System Properties','System Admin','sys_properties_list.do','list','property properties config configuration',78],
+['sys-dict','Data Dictionary','System Admin','sys_dictionary_list.do','list','dictionary field schema table definition',75],
+['sys-tables','Tables','System Admin','sys_db_object_list.do','list','tables schema db object',72],
+['sys-jobs','Scheduled Jobs','System Admin','sysauto_list.do','list','scheduled job cron scheduler auto',72],
+['biz-rules','Business Rules','Automation','sys_script_list.do','list','business rule server script before after',82],
+['flows','Flow Designer','Automation','flow_designer.do','view','flow automation designer builder',80],
+['wf-all','Workflows','Automation','wf_workflow_list.do','list','workflow process legacy',78],
+['client-scripts','Client Scripts','Automation','sys_script_client_list.do','list','client script ui form javascript',75],
+['reports','Reports','Reporting','sys_report_list.do','list','report reports analytics metrics',85],
+['dashboards','Dashboards','Reporting','pa_dashboard_list.do','list','dashboard kpi performance analytics pa',82],
+['acl','Access Controls','Security','sys_security_acl_list.do','list','acl security access control permission rule',78],
+['audit','Audit Log','Security','sys_audit_list.do','list','audit log security trail',72]
+];
+
+// Record type jump map: prefix -> {table, label}
+var R={INC:{t:'incident',l:'Incident'},CHG:{t:'change_request',l:'Change'},PRB:{t:'problem',l:'Problem'},RITM:{t:'sc_req_item',l:'Request Item'},REQ:{t:'sc_request',l:'Request'},SCTASK:{t:'sc_task',l:'Catalog Task'},TASK:{t:'task',l:'Task'},KB:{t:'kb_knowledge',l:'Knowledge Article'},WO:{t:'wm_order',l:'Work Order'}};
+
+function save(){try{localStorage.setItem(S,JSON.stringify(U));}catch(e){}}
+function gu(id){return U[id]?Math.log(1+(U[id].c||0))*600:0;}
+function tu(id){U[id]={c:((U[id]||{}).c||0)+1,t:Date.now()};save();}
+
+// Navigate top-level window (works inside NE iframe)
+function go(url){
+  var a=document.createElement('a');
+  a.href='/'+url;
+  a.target='_top';
+  a.style.display='none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){if(a.parentNode)a.parentNode.removeChild(a);},200);
+}
+
+// ============================================================
+// OPTION 1: Semantic signal vocabulary
+// Maps keyword clues to record types:
+//   "memory issue"            -> Incidents
+//   "deploy server"           -> Changes
+//   "root cause recurring"    -> Problems
+//   "relationship on Portia"  -> CMDB Relationships (CI extracted)
+//   "laptop warranty"         -> Assets
+//   "vpn access request"      -> Service Requests
+// ============================================================
+var SIG={
+  inc:['incident','issue','error','crash','slow','memory leak','memory','cpu usage','cpu','performance','outage','degraded','alert','alarm','offline','failing','failed','broken','hung','frozen','not working','unavailable','service down','high cpu','high memory','disk full','disk space','timeout','exception','latency','spike','bottleneck','unresponsive','unreachable'],
+  chg:['deploy','deployment','release','patch','upgrade','migration','maintenance','rollback','reboot','restart','emergency change','standard change','normal change','cab','change freeze','planned work','rfcm','change window','change request','scheduled work','downtime'],
+  prb:['root cause','workaround','recurring','rca','known error','systemic','post incident','pir','repeat incident','problem management','underlying cause','permanent fix'],
+  rel:['relationship','dependency','depends on','depends','impacts','topology','service map','connects to','connected to','linked to','upstream','downstream','runs on','hosted on','cmdb rel','cmdb relationship','mapped to','related to','affected by'],
+  ast:['asset','hardware','laptop','workstation','equipment','warranty','procurement','inventory','serial number','model number','purchase order','end of life','asset tag'],
+  req:['request','provision','onboard','onboarding','catalog item','service request','fulfillment','order access','new account','new access'],
+  acc:['password','reset password','access request','permission','role','account locked','login','locked out','unlock','mfa','vpn access','two factor','credentials','access issue']
+};
+
+function matchSigs(ql){
+  var m={};
+  var keys=Object.keys(SIG);
+  for(var ki=0;ki<keys.length;ki++){
+    var k=keys[ki],ws=SIG[k];
+    for(var wi=0;wi<ws.length;wi++){
+      if(ql.indexOf(ws[wi])>=0){m[k]=true;break;}
+    }
+  }
+  return m;
+}
+
+// Extract CI name from relationship queries:
+//   "portia relationships"        -> "portia"
+//   "relationship on Portia online" -> "Portia online"
+function extractRelCI(qt,ql){
+  var m=qt.match(/\b(?:on|for|about|of)\s+([\w][\w\s.-]{1,40})$/i);
+  if(m){return m[1].replace(/\s*(relationship|relationships|dependency|dependencies|topology|records?)$/i,'').trim();}
+  var noise=['relationships','relationship','dependencies','dependency','depends on','depends','topology','service map','linked to','connected to','connects to','upstream','downstream','runs on','hosted on','cmdb rel','impacts','mapped to','related to','affected by','records','record','search','find','show','list'];
+  var s=ql;
+  noise.forEach(function(w){s=s.replace(new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','g'),' ');});
+  s=s.replace(/\s+/g,' ').trim();
+  return s.length>=2?s:'';
+}
+
+function extractEntity(qt){
+  var m=qt.match(/\b(?:on|for|about|of)\s+([\w][\w\s.-]{2,30})$/i);
+  return m?m[1].trim():'';
+}
+
+// ============================================================
+// Intent detection — decides what to search based on text clues
+// ============================================================
+function detectIntents(q){
+  var qt=q.trim(),ql=qt.toLowerCase(),intents=[];
+
+  // 1. Full record number: INC0001234
+  var rm=qt.match(/^([A-Z]{2,8})\s*(\d{4,12})$/i);
+  if(rm){var rk=rm[1].toUpperCase(),rn=rk+rm[2],rec=R[rk];
+    if(rec){intents.push({id:'__rec',label:'Open '+rec.l+' '+rn,sub:'Direct record jump',url:rec.t+'_list.do?sysparm_query=number='+rn,badge:'Jump',bc:'bj',icon:'&#127919;',live:null});return intents;}}
+
+  // 2. Record prefix + optional partial digits (INC, CHG, INC004...)
+  var pm=qt.match(/^([A-Z]{2,8})(\d{0,3})$/i);
+  if(pm){var pk=pm[1].toUpperCase(),pn=pm[2]||'',rec2=R[pk];
+    if(rec2){
+      var hasNum=pn.length>0;
+      var pUrl=rec2.t+'_list.do'+(hasNum?'?sysparm_query=numberLIKE'+encodeURIComponent(pk+pn):'');
+      var pLive=hasNum?{table:rec2.t,q:'numberLIKE'+encodeURIComponent(pk+pn),fields:'number,short_description,sys_id',
+        nm:function(r){return r.number;},
+        sb:function(r){return r.short_description||'(no description)';},
+        ul:function(r){return rec2.t+'.do?sys_id='+r.sys_id;}}:null;
+      intents.push({id:'__recpre',
+        label:hasNum?'Find '+rec2.l+': '+pk+pn+'...':('Browse all '+rec2.l+'s'),
+        sub:hasNum?'Partial number — add more digits to narrow down':'Type digits after '+pk+' to jump to a specific record',
+        url:pUrl,badge:rec2.l.split(' ')[0],bc:'bj',icon:'&#127919;',live:pLive});
+      return intents;}}
+
+  if(qt.length<2)return intents;
+
+  // 3. Email address
+  if(/^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i.test(qt)){
+    intents.push({id:'__email',label:'Find user: '+qt,sub:'Search by email address',url:'sys_user_list.do?sysparm_query=email='+encodeURIComponent(qt),badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'email='+encodeURIComponent(qt),fields:'name,email,title,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.email||'')+(r.title?' · '+r.title:'');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
+    return intents;}
+
+  // 4. IP address
+  if(/^\d{1,3}(\.\d{1,3}){3}/.test(qt)){
+    intents.push({id:'__ip',label:'Find CI with IP: '+qt,sub:'CMDB search by IP address',url:'cmdb_ci_list.do?sysparm_query=ip_addressLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'ip_addressLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.ip_address||'')+(r.sys_class_name?' · '+r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+    return intents;}
+
+  // 5. Question words -> knowledge base
+  var isQ=/^(how|what|why|when|can|is|are|does|do|where|which|who)\b/i.test(ql);
+  if(isQ){
+    intents.push({id:'__kb',label:'Search knowledge: "'+qt+'"',sub:'Knowledge base article search',url:'kb_knowledge_list.do?sysparm_query=textLIKE'+encodeURIComponent(qt)+'^workflow_state=published',badge:'KB',bc:'bk',icon:'&#128218;',live:{table:'kb_knowledge',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^workflow_state=published',fields:'short_description,number,category,sys_id',nm:function(r){return r.short_description||r.number;},sb:function(r){return (r.number||'')+(r.category?' · '+r.category:'');},ul:function(r){return 'kb_knowledge.do?sys_id='+r.sys_id;}}});
+  }
+
+  // 6. Semantic signal matching (Option 1)
+  var sigs=matchSigs(ql);
+  var entity=extractEntity(qt);
+  var hasSigs=Object.keys(sigs).length>0;
+
+  if(sigs.inc){intents.push({id:'__inc',label:'Search Incidents: "'+qt+'"',sub:'&#129396; Detected signal: issue/error/performance/outage',url:'incident_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'INC',bc:'bj',icon:'&#128680;',live:{table:'incident',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,priority,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){var p=['Critical','High','Moderate','Low','Planning'];return 'Priority: '+(p[(parseInt(r.priority)||5)-1]||r.priority||'?');},ul:function(r){return 'incident.do?sys_id='+r.sys_id;}}});}
+
+  if(sigs.chg){intents.push({id:'__chg',label:'Search Changes: "'+qt+'"',sub:'&#129396; Detected signal: deploy/maintenance/change/patch',url:'change_request_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'CHG',bc:'bc',icon:'&#128260;',live:{table:'change_request',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,type,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'Type: '+(r.type||'?');},ul:function(r){return 'change_request.do?sys_id='+r.sys_id;}}});}
+
+  if(sigs.prb){intents.push({id:'__prb',label:'Search Problems: "'+qt+'"',sub:'&#129396; Detected signal: root cause/workaround/recurring',url:'problem_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'PRB',bc:'bc',icon:'&#9888;',live:{table:'problem',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'problem.do?sys_id='+r.sys_id;}}});}
+
+  if(sigs.rel){
+    var relEntity=extractRelCI(qt,ql)||entity||'';
+    var relQ=relEntity?'parent.nameLIKE'+encodeURIComponent(relEntity)+'^ORchild.nameLIKE'+encodeURIComponent(relEntity):'typeISNOTEMPTY';
+    var relUrl='cmdb_rel_ci_list.do'+(relEntity?'?sysparm_query='+relQ:'');
+    intents.push({id:'__rel',label:relEntity?'CMDB Relationships for "'+relEntity+'"':'Browse CMDB Relationships',sub:relEntity?'&#129396; Topology/dependency — CI: '+relEntity:'&#129396; Detected signal: relationship/dependency/topology',url:relUrl,badge:'Rel',bc:'bk',icon:'&#128279;',live:{table:'cmdb_rel_ci',q:relQ,fields:'parent.name,type.name,child.name,sys_id',nm:function(r){return (r['parent.name']||'?')+' → '+(r['type.name']||'?')+' → '+(r['child.name']||'?');},sb:function(r){return 'CMDB Relationship';},ul:function(r){return 'cmdb_rel_ci.do?sys_id='+r.sys_id;}}});}
+
+  if(sigs.ast){intents.push({id:'__ast',label:'Search Assets: "'+qt+'"',sub:'&#129396; Detected signal: hardware/equipment/asset',url:'alm_asset_list.do?sysparm_query=display_nameLIKE'+encodeURIComponent(qt),badge:'Asset',bc:'bc',icon:'&#128230;',live:{table:'alm_asset',q:'display_nameLIKE'+encodeURIComponent(qt),fields:'display_name,asset_tag,state,sys_id',nm:function(r){return r.display_name||(r.asset_tag||'(no name)');},sb:function(r){return 'Tag: '+(r.asset_tag||'?')+' | State: '+(r.state||'?');},ul:function(r){return 'alm_asset.do?sys_id='+r.sys_id;}}});}
+
+  if(sigs.req||sigs.acc){
+    var reqLabel=sigs.acc?'Search Access/Requests: "'+qt+'"':'Search Service Requests: "'+qt+'"';
+    var reqSub=sigs.acc?'&#129396; Detected signal: access/password/permission':'&#129396; Detected signal: request/provision/onboard';
+    intents.push({id:'__req',label:reqLabel,sub:reqSub,url:'sc_req_item_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'RITM',bc:'bu',icon:'&#128203;',live:{table:'sc_req_item',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'sc_req_item.do?sys_id='+r.sys_id;}}});}
+
+  // No semantic signals -> CI + user defaults
+  if(!hasSigs){
+    intents.push({id:'__ci',label:'Search CIs: "'+qt+'"',sub:'CMDB configuration item name search',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' · '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+    var isNm=/^[a-zA-Z][a-zA-Z'-]+(\s+[a-zA-Z][a-zA-Z'-]+){1,2}$/.test(qt)&&!isQ;
+    intents.push({id:'__user',label:'Search users: "'+qt+'"',sub:isNm?'Name detected — searching active users':'Active user search',url:'sys_user_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt)+'^active=true',badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'nameLIKE'+encodeURIComponent(qt)+'^active=true',fields:'name,email,title,department,sys_id',nm:function(r){return r.name;},sb:function(r){var p=[];if(r.title)p.push(r.title);if(r.department)p.push(r.department);if(r.email)p.push(r.email);return p.join(' · ');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
+  } else if(entity){
+    intents.push({id:'__ci_ent',label:'Search CIs: "'+entity+'"',sub:'CI extracted from query context',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(entity),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(entity),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' · '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+  }
+
+  // Option 3: Global Search fallback (always shown)
+  intents.push({id:'__global',label:'Search everywhere: "'+qt+'"',sub:'Global search across all tables — incidents, changes, CIs, knowledge &amp; more',url:'task_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt),badge:'All',bc:'bm',icon:'&#127757;',live:{isGlobal:true,q:qt}});
+
+  return intents;
+}
+
+// Fuzzy module scoring (m[5]=keywords, m[6]=base_rank)
+function sc(m,q){
+  var n=m[1].toLowerCase(),k=(m[5]||'').toLowerCase(),ql=q.toLowerCase();
+  if(n===ql)return 10000+gu(m[0]);
+  if(n.startsWith(ql))return 8500+gu(m[0]);
+  if(n.split(' ').some(function(w){return w.startsWith(ql);}))return 6500+gu(m[0]);
+  if(n.includes(ql))return 4500+gu(m[0]);
+  if(k.includes(ql))return 3500+gu(m[0]);
+  if(m[2].toLowerCase().includes(ql))return 2000+gu(m[0]);
+  var ci=0;for(var i=0;i<ql.length;i++){var p=n.indexOf(ql[i],ci);if(p===-1)return -1;ci=p+1;}
+  return 500+gu(m[0]);
+}
+
+var lr=[],si=-1,liveTimer=null,curQ='';
+
+window.goI=function(idx){if(lr[idx]){tu(lr[idx][0]);go(lr[idx][1]);}};
+window.goChip=function(id){var m=M.find(function(x){return x[0]===id;});if(m){tu(id);go(m[3]);}};
+window.toggleBrowse=function(){
+  var d=document.getElementById('browseDiv');
+  var open=d.style.display==='none'||!d.style.display;
+  d.style.display=open?'block':'none';
+  document.getElementById('bb').textContent=open?'\u25b4 Collapse':'\u25be Browse all modules';
+  if(open&&!d.innerHTML){
+    var cats={};M.forEach(function(m){if(!cats[m[2]])cats[m[2]]=[];cats[m[2]].push(m);});
+    var h='';Object.keys(cats).forEach(function(cat){
+      h+='<div class="bcat">'+cat+'</div>';
+      cats[cat].forEach(function(m){h+='<div class="bitem" onclick="goChip(\''+m[0]+'\')" ><span style="color:'+(CC[cat]||'#607d8b')+'">&#9632;</span> '+m[1]+'</div>';});
+    });
+    d.innerHTML=h;
+  }
+};
+
+function renderChips(){
+  var sorted=M.slice().sort(function(a,b){return(gu(b[0])+b[6])-(gu(a[0])+a[6]);}).slice(0,8);
+  document.getElementById('chips').innerHTML=sorted.map(function(m){
+    return '<span class="chip" onclick="goChip(\''+m[0]+'\')" >'+m[1]+'</span>';
+  }).join('');
+}
+
+function renderAll(q,intents,mods){
+  lr=[];var h='',idx=0;
+  if(intents.length){
+    h+='<div class="sec">&#129504; Smart Search</div>';
+    intents.forEach(function(it){
+      lr.push([it.id,it.url]);
+      h+='<div class="ri" onclick="goI('+idx+')">';
+      h+='<div class="ri-ico">'+it.icon+'</div>';
+      h+='<div class="ri-body"><div class="ri-name">'+it.label+'</div><div class="ri-sub">'+it.sub+'</div></div>';
+      h+='<div class="ri-badge '+it.bc+'">'+it.badge+'</div></div>';
+      idx++;
+    });
+  }
+  if(mods.length){
+    h+='<div class="sec">Modules</div>';
+    mods.forEach(function(m){
+      lr.push([m[0],m[3]]);
+      var c=CC[m[2]]||'#607d8b';
+      var em=m[4]==='form'?'&#128221;':(m[2]==='CMDB / Asset'?'&#128187;':(m[2]==='Knowledge'?'&#128218;':(m[2]==='Reporting'?'&#128202;':'&#128203;')));
+      h+='<div class="ri" onclick="goI('+idx+')">';
+      h+='<div class="ri-ico" style="background:'+c+'18;color:'+c+'">'+em+'</div>';
+      h+='<div class="ri-body"><div class="ri-name">'+m[1]+'</div><div class="ri-sub">'+m[2]+'</div></div>';
+      h+='<div class="ri-badge bm">'+(m[4]==='form'?'Form':'List')+'</div></div>';
+      idx++;
+    });
+  }
+  if(!h)h='<div class="empty">No results &mdash; try a different keyword or type INC/CHG/PRB + number.</div>';
+  var livePH='';
+  intents.forEach(function(it){
+    if(it.live){
+      var lid='lv_'+it.id.replace(/__/g,'').replace(/_/g,'');
+      livePH+=it.live.isGlobal
+        ?'<div id="'+lid+'"><div class="ld"><div class="sp"></div>Searching across all tables...</div></div>'
+        :'<div id="'+lid+'"><div class="ld"><div class="sp"></div>Searching '+it.badge+' records...</div></div>';
+    }
+  });
+  if(livePH)h+='<div class="sec">&#128269; Live Results</div>'+livePH;
+  document.getElementById('results').innerHTML=h;
+  si=-1;
+}
+
+function fetchLive(q,it){
+  if(!it.live||it.live.isGlobal)return;
+  var lid='lv_'+it.id.replace(/__/g,'').replace(/_/g,'');
+  var url='/api/now/table/'+it.live.table+'?sysparm_query='+it.live.q+'&sysparm_limit=5&sysparm_fields='+it.live.fields+'&sysparm_display_value=true';
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',url,true);
+  xhr.setRequestHeader('Accept','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4||q!==curQ)return;
+    var el=document.getElementById(lid);
+    if(!el)return;
+    if(xhr.status===200){
+      var data;try{data=JSON.parse(xhr.responseText);}catch(e){el.innerHTML='';return;}
+      var recs=(data&&data.result)||[];
+      if(!recs.length){el.innerHTML='<div class="ld" style="color:#c0c7cf">No '+it.badge+' records found</div>';return;}
+      var h='',bc=it.bc;
+      var borderMap={bj:'#2e7d32',bu:'#1565c0',bc:'#e65100',bk:'#6a1b9a',bm:'#3c6bc9'};
+      var border=borderMap[bc]||'#607d8b';
+      recs.forEach(function(r){
+        var rIdx=lr.length;
+        lr.push(['__lv'+rIdx,it.live.ul(r)]);
+        h+='<div class="ri" onclick="goI('+rIdx+')" style="border-left:3px solid '+border+'">';
+        h+='<div class="ri-ico">'+it.icon+'</div>';
+        h+='<div class="ri-body"><div class="ri-name">'+it.live.nm(r)+'</div><div class="ri-sub">'+it.live.sb(r)+'</div></div>';
+        h+='<div class="ri-badge '+bc+'">'+it.badge+'</div></div>';
+      });
+      el.innerHTML=h;
+    }else{el.innerHTML='';}
+  };
+  xhr.send();
+}
+
+// Option 3: Global Text Search API
+function fetchGlobalSearch(q){
+  var lid='lv_global';
+  var url='/api/now/globalsearch/search?sysparm_search='+encodeURIComponent(q)+'&sysparm_limit=10';
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',url,true);
+  xhr.setRequestHeader('Accept','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4||q!==curQ)return;
+    var el=document.getElementById(lid);
+    if(!el)return;
+    if(xhr.status===200){
+      var data;try{data=JSON.parse(xhr.responseText);}catch(e){el.innerHTML='';return;}
+      var groups=[];
+      if(data&&data.result&&data.result.groups){groups=data.result.groups;}
+      else if(data&&data.result&&Array.isArray(data.result)){groups=data.result;}
+      groups=groups.filter(function(g){return g.result&&g.result.length>0;});
+      if(!groups.length){el.innerHTML='<div class="ld" style="color:#c0c7cf">No results found across all tables</div>';return;}
+      var h='';
+      groups.forEach(function(g){
+        var grecs=g.result||[];
+        var gname=g.name||g.label||'Records';
+        h+='<div style="padding:4px 16px 2px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7c93;border-top:1px solid #f0f2f5;margin-top:4px">'+gname+'</div>';
+        grecs.slice(0,4).forEach(function(rec){
+          var rIdx=lr.length;
+          var rUrl=(rec.record_url||rec.url||'').replace(/^\//,'');
+          if(!rUrl&&rec.table&&rec.sys_id){rUrl=rec.table+'.do?sys_id='+rec.sys_id;}
+          lr.push(['__gs'+rIdx,rUrl]);
+          h+='<div class="ri" onclick="goI('+rIdx+')" style="border-left:3px solid #3c6bc9">';
+          h+='<div class="ri-ico" style="font-size:14px">&#127757;</div>';
+          h+='<div class="ri-body"><div class="ri-name">'+(rec.name||'(no name)')+'</div><div class="ri-sub">'+(rec.table?rec.table.replace(/_/g,' '):gname)+'</div></div>';
+          h+='<div class="ri-badge bm">'+gname.substring(0,10)+'</div></div>';
+        });
+      });
+      el.innerHTML=h;
+    }else if(xhr.status===404||xhr.status===403){
+      el.innerHTML='<div class="ld" style="color:#c0c7cf">Global search API not available — use the search bar at the top of ServiceNow</div>';
+    }else{el.innerHTML='';}
+  };
+  xhr.send();
+}
+
+document.getElementById('q').addEventListener('input',function(){
+  var q=this.value.trim();
+  curQ=q;
+  if(liveTimer){clearTimeout(liveTimer);liveTimer=null;}
+  if(!q){renderChips();document.getElementById('results').innerHTML='';lr=[];si=-1;return;}
+  document.getElementById('chips').innerHTML='';
+  var intents=detectIntents(q);
+  var scored=M.map(function(m){return{m:m,s:sc(m,q)};}).filter(function(x){return x.s>0;}).sort(function(a,b){return b.s-a.s;}).slice(0,10).map(function(x){return x.m;});
+  renderAll(q,intents,scored);
+  liveTimer=setTimeout(function(){
+    if(q!==curQ)return;
+    intents.forEach(function(it){
+      if(!it.live)return;
+      if(it.live.isGlobal){fetchGlobalSearch(q);}
+      else{fetchLive(q,it);}
+    });
+  },400);
+});
+
+document.getElementById('q').addEventListener('keydown',function(e){
+  var items=document.querySelectorAll('.ri');
+  if(e.key==='ArrowDown'){e.preventDefault();si=Math.min(si+1,items.length-1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();si=Math.max(si-1,0);}
+  else if(e.key==='Enter'){
+    e.preventDefault();
+    if(si>=0&&lr[si]){tu(lr[si][0]);go(lr[si][1]);}
+    else if(lr.length){tu(lr[0][0]);go(lr[0][1]);}
+    return;
+  }
+  else return;
+  items.forEach(function(el,i){el.classList.toggle('sel',i===si);});
+  if(items[si])items[si].scrollIntoView({block:'nearest'});
+});
+
+renderChips();
+document.getElementById('q').focus();
+})();
+</script>
+</body>
+</html>
