@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"><title>Search Results — Smart Navigator</title>
+<!--
+  ServiceNow artifact: sys_ui_page
+  Name: smart_navigator_results
+  Instance: zurichandres.service-now.com
+  Served via: sys_processor (smart_navigator_results.do)
+
+  Full-page search results for "Search everywhere" from Smart Navigator.
+  Accepts URL parameter: ?q=<search term>
+  Calls /api/now/globalsearch/search and renders grouped results by table.
+  Falls back to direct table queries if global search API is unavailable.
+
+  To deploy:
+    1. Create sys_ui_page named "smart_navigator_results"
+    2. Paste this file's content into the HTML field
+    3. Create sys_processor (see sys_processor__smart_navigator_results.js)
+-->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif;background:#f4f6f8;min-height:100vh;font-size:14px;color:#1b2a34}
+.hdr{background:#1d3557;color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.hdr-logo{font-size:18px;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:600;flex-shrink:0}
+.hdr-search{flex:1;margin:0 12px}
+.hdr-search input{width:100%;padding:7px 12px;border-radius:5px;border:none;font-size:14px;background:rgba(255,255,255,.15);color:#fff;outline:none}
+.hdr-search input::placeholder{color:rgba(255,255,255,.55)}
+.hdr-search input:focus{background:rgba(255,255,255,.25)}
+.hdr-back{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;white-space:nowrap;flex-shrink:0}
+.hdr-back:hover{color:#fff}
+.wrap{max-width:960px;margin:16px auto;padding:0 16px}
+.status-bar{font-size:12px;color:#6b778c;padding:0 0 10px;display:flex;align-items:center;gap:8px}
+.section{background:#fff;border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.07);margin-bottom:10px;overflow:hidden}
+.sec-hdr{padding:9px 16px;background:#f8f9fb;border-bottom:1px solid #e8ecf0;display:flex;align-items:center;gap:8px}
+.sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.sec-count{font-size:11px;background:#e5eaee;color:#5f6b78;border-radius:10px;padding:1px 8px;font-weight:600}
+.sec-link{margin-left:auto;font-size:12px;color:#0070d2;text-decoration:none;cursor:pointer}
+.sec-link:hover{text-decoration:underline}
+.row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:background .08s}
+.row:last-child{border-bottom:none}
+.row:hover{background:#f0f7ff}
+.row-ico{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.row-body{flex:1;min-width:0}
+.row-name{font-size:14px;font-weight:500;color:#1b2a34;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-desc{font-size:12px;color:#6b778c;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap;flex-shrink:0}
+.loading{text-align:center;padding:48px 20px;color:#6b778c}
+.sp{display:inline-block;width:16px;height:16px;border:2px solid #d1d9e0;border-top-color:#0070d2;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:#6b778c;background:#fff;border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.empty-icon{font-size:32px;margin-bottom:10px}
+.fallback-note{font-size:11px;color:#a0aab4;text-align:center;padding:8px 0 0}
+/* Table color themes */
+.t-inc{color:#c62828}.t-chg{color:#7b1fa2}.t-prb{color:#e65100}
+.t-req{color:#1565c0}.t-ci{color:#2e7d32}.t-kb{color:#558b2f}
+.t-usr{color:#283593}.t-def{color:#546e7a}
+.bg-inc{background:#fce8e8;color:#c62828}.bg-chg{background:#f3e5f5;color:#7b1fa2}
+.bg-prb{background:#fff3e0;color:#e65100}.bg-req{background:#e3f2fd;color:#1565c0}
+.bg-ci{background:#e8f5e9;color:#2e7d32}.bg-kb{background:#f1f8e9;color:#558b2f}
+.bg-usr{background:#e8eaf6;color:#283593}.bg-def{background:#eceff1;color:#546e7a}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <span class="hdr-logo">&#9889;</span>
+  <span class="hdr-title">Search Results</span>
+  <div class="hdr-search">
+    <input id="hq" type="text" placeholder="Search everywhere..." autocomplete="off" spellcheck="false">
+  </div>
+  <a class="hdr-back" href="smart_navigator_v2.do">&#8592; Navigator</a>
+</div>
+<div class="wrap">
+  <div class="status-bar" id="statusBar"></div>
+  <div id="results"><div class="loading"><div class="sp"></div>Searching across all tables&hellip;</div></div>
+</div>
+<script>
+(function(){
+
+// Table metadata: label, icon, badge class, color class
+var TMETA={
+  incident:       {label:'Incidents',       icon:'&#128680;', bg:'bg-inc', tc:'t-inc', listUrl:'incident_list.do?sysparm_query=short_descriptionLIKE'},
+  change_request: {label:'Changes',         icon:'&#128260;', bg:'bg-chg', tc:'t-chg', listUrl:'change_request_list.do?sysparm_query=short_descriptionLIKE'},
+  problem:        {label:'Problems',        icon:'&#9888;',   bg:'bg-prb', tc:'t-prb', listUrl:'problem_list.do?sysparm_query=short_descriptionLIKE'},
+  sc_request:     {label:'Requests',        icon:'&#128203;', bg:'bg-req', tc:'t-req', listUrl:'sc_request_list.do?sysparm_query=short_descriptionLIKE'},
+  sc_req_item:    {label:'Request Items',   icon:'&#128203;', bg:'bg-req', tc:'t-req', listUrl:'sc_req_item_list.do?sysparm_query=short_descriptionLIKE'},
+  sc_task:        {label:'Catalog Tasks',   icon:'&#9989;',   bg:'bg-req', tc:'t-req', listUrl:'sc_task_list.do?sysparm_query=short_descriptionLIKE'},
+  cmdb_ci:        {label:'Config Items',    icon:'&#128187;', bg:'bg-ci',  tc:'t-ci',  listUrl:'cmdb_ci_list.do?sysparm_query=nameLIKE'},
+  cmdb_ci_server: {label:'Servers',         icon:'&#128187;', bg:'bg-ci',  tc:'t-ci',  listUrl:'cmdb_ci_server_list.do?sysparm_query=nameLIKE'},
+  alm_asset:      {label:'Assets',          icon:'&#128230;', bg:'bg-ci',  tc:'t-ci',  listUrl:'alm_asset_list.do?sysparm_query=display_nameLIKE'},
+  kb_knowledge:   {label:'Knowledge',       icon:'&#128218;', bg:'bg-kb',  tc:'t-kb',  listUrl:'kb_knowledge_list.do?sysparm_query=short_descriptionLIKE'},
+  sys_user:       {label:'Users',           icon:'&#128100;', bg:'bg-usr', tc:'t-usr', listUrl:'sys_user_list.do?sysparm_query=nameLIKE'},
+  task:           {label:'Tasks',           icon:'&#9989;',   bg:'bg-req', tc:'t-req', listUrl:'task_list.do?sysparm_query=short_descriptionLIKE'}
+};
+
+function tmeta(table){
+  return TMETA[table]||{label:tableLabel(table),icon:'&#128193;',bg:'bg-def',tc:'t-def',listUrl:table+'_list.do?sysparm_query=nameLIKE'};
+}
+function tableLabel(t){
+  if(TMETA[t])return TMETA[t].label;
+  return t.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+}
+
+function getParam(name){
+  var m=new RegExp('[?&]'+name+'=([^&]*)').exec(window.location.search);
+  return m?decodeURIComponent(m[1].replace(/\+/g,' ')):'';
+}
+
+function go(url){
+  var a=document.createElement('a');
+  a.href='/'+url;a.target='_top';a.style.display='none';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){if(a.parentNode)a.parentNode.removeChild(a);},200);
+}
+
+function setStatus(msg){document.getElementById('statusBar').textContent=msg;}
+
+function renderGroups(groups,q,isFallback){
+  var el=document.getElementById('results');
+  if(!groups||!groups.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">&#128269;</div>No results found for &ldquo;'+q+'&rdquo;.<br><span style="font-size:13px;color:#8c98a4;margin-top:6px;display:block">Try different keywords or check the spelling.</span></div>';
+    setStatus('');
+    return;
+  }
+  var total=0;
+  groups.forEach(function(g){total+=(g.result||[]).length;});
+  setStatus(total+' result'+(total===1?'':'s')+' across '+groups.length+' table'+(groups.length===1?'':'s')+(isFallback?' (direct table search)':''));
+
+  var h='';
+  groups.forEach(function(g){
+    var recs=g.result||[];
+    if(!recs.length)return;
+    var tbl=g.table||recs[0].table||'';
+    var meta=tmeta(tbl);
+    var label=g.label||g.name||meta.label;
+    var listHref=meta.listUrl+encodeURIComponent(q);
+
+    h+='<div class="section">';
+    h+='<div class="sec-hdr">';
+    h+='<span class="row-ico '+meta.bg+'">'+meta.icon+'</span>';
+    h+='<span class="sec-title '+meta.tc+'">'+label+'</span>';
+    h+='<span class="sec-count">'+recs.length+(recs.length>=10?'+':'')+' result'+(recs.length===1?'':'s')+'</span>';
+    h+='<span class="sec-link" onclick="go(\''+listHref.replace(/'/g,"\\'")+'\')" >View all &rarr;</span>';
+    h+='</div>';
+
+    recs.forEach(function(rec){
+      var rUrl=(rec.record_url||rec.url||'').replace(/^\//,'');
+      if(!rUrl&&rec.table&&rec.sys_id){rUrl=rec.table+'.do?sys_id='+rec.sys_id;}
+      if(!rUrl&&tbl&&rec.sys_id){rUrl=tbl+'.do?sys_id='+rec.sys_id;}
+      var name=rec.name||rec.number||rec.label||'(no name)';
+      var desc=rec.short_description||rec.description||rec.value||'';
+      if(desc===name)desc='';
+
+      h+='<div class="row" onclick="go(\''+rUrl.replace(/'/g,"\\'")+'\')">';
+      h+='<div class="row-ico '+meta.bg+'">'+meta.icon+'</div>';
+      h+='<div class="row-body">';
+      h+='<div class="row-name">'+name+'</div>';
+      if(desc)h+='<div class="row-desc">'+desc.substring(0,120)+'</div>';
+      h+='</div>';
+      if(rec.table&&rec.table!==tbl){
+        var rm=tmeta(rec.table);
+        h+='<span class="row-badge '+rm.bg+'">'+tableLabel(rec.table)+'</span>';
+      }
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+
+  el.innerHTML=h||'<div class="empty"><div class="empty-icon">&#128269;</div>No results found.</div>';
+  if(isFallback){
+    el.innerHTML+='<div class="fallback-note">Using direct table search &mdash; Global Search API unavailable on this instance</div>';
+  }
+}
+
+function globalSearch(q){
+  var url='/api/now/globalsearch/search?sysparm_search='+encodeURIComponent(q)+'&sysparm_limit=20';
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',url,true);
+  xhr.setRequestHeader('Accept','application/json');
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    if(xhr.status===200){
+      var data;try{data=JSON.parse(xhr.responseText);}catch(e){
+        document.getElementById('results').innerHTML='<div class="empty">Could not parse search results.</div>';return;
+      }
+      var groups=[];
+      if(data&&data.result&&data.result.groups){groups=data.result.groups;}
+      else if(data&&data.result&&Array.isArray(data.result)){groups=data.result;}
+      groups=groups.filter(function(g){return g.result&&g.result.length>0;});
+      renderGroups(groups,q,false);
+    }else if(xhr.status===404||xhr.status===403||xhr.status===405){
+      // Global search API not available — fall back to direct table queries
+      fallbackSearch(q);
+    }else{
+      document.getElementById('results').innerHTML='<div class="empty">Search failed (HTTP '+xhr.status+'). Try again.</div>';
+    }
+  };
+  xhr.send();
+}
+
+// Fallback: query key tables directly via Table API
+function fallbackSearch(q){
+  var TABLES=[
+    {t:'incident',     label:'Incidents',      q:'short_descriptionLIKE'+encodeURIComponent(q)+'^active=true',          fields:'number,short_description,priority,sys_id'},
+    {t:'change_request',label:'Changes',       q:'short_descriptionLIKE'+encodeURIComponent(q)+'^active=true',          fields:'number,short_description,type,sys_id'},
+    {t:'problem',      label:'Problems',        q:'short_descriptionLIKE'+encodeURIComponent(q)+'^active=true',          fields:'number,short_description,state,sys_id'},
+    {t:'sc_req_item',  label:'Request Items',   q:'short_descriptionLIKE'+encodeURIComponent(q)+'^active=true',          fields:'number,short_description,state,sys_id'},
+    {t:'cmdb_ci',      label:'Config Items',    q:'nameLIKE'+encodeURIComponent(q),                                      fields:'name,sys_class_name,ip_address,sys_id'},
+    {t:'kb_knowledge', label:'Knowledge',       q:'short_descriptionLIKE'+encodeURIComponent(q)+'^workflow_state=published', fields:'short_description,number,sys_id'},
+    {t:'sys_user',     label:'Users',           q:'nameLIKE'+encodeURIComponent(q)+'^active=true',                       fields:'name,email,title,sys_id'},
+    {t:'alm_asset',    label:'Assets',          q:'display_nameLIKE'+encodeURIComponent(q),                              fields:'display_name,asset_tag,state,sys_id'}
+  ];
+
+  document.getElementById('results').innerHTML='<div class="loading"><div class="sp"></div>Searching key tables&hellip;</div>';
+  setStatus('');
+
+  var pending=TABLES.length;
+  var collected=[];
+
+  TABLES.forEach(function(tbl){
+    var url='/api/now/table/'+tbl.t
+      +'?sysparm_query='+tbl.q
+      +'&sysparm_limit=10'
+      +'&sysparm_fields='+tbl.fields
+      +'&sysparm_display_value=true'
+      +'&sysparm_exclude_reference_link=true';
+    var xhr=new XMLHttpRequest();
+    xhr.open('GET',url,true);
+    xhr.setRequestHeader('Accept','application/json');
+    xhr.onreadystatechange=function(){
+      if(xhr.readyState!==4)return;
+      pending--;
+      if(xhr.status===200){
+        var data;try{data=JSON.parse(xhr.responseText);}catch(e){}
+        var recs=(data&&data.result)||[];
+        if(recs.length){
+          // Normalize records to match global search shape
+          var normalized=recs.map(function(r){
+            return {
+              sys_id:r.sys_id,
+              table:tbl.t,
+              name:r.number||r.name||r.display_name||r.short_description||'',
+              short_description:r.short_description||r.name||'',
+              record_url:tbl.t+'.do?sys_id='+r.sys_id
+            };
+          });
+          collected.push({table:tbl.t,label:tbl.label,result:normalized});
+        }
+      }
+      if(pending===0){
+        renderGroups(collected,q,true);
+      }
+    };
+    xhr.send();
+  });
+}
+
+function init(){
+  var q=getParam('q')||getParam('sysparm_search');
+  if(q){
+    document.getElementById('hq').value=q;
+    document.title='Results: '+q+' \u2014 Smart Navigator';
+    globalSearch(q);
+  }else{
+    document.getElementById('results').innerHTML='<div class="empty"><div class="empty-icon">&#128269;</div>Enter a search term above.</div>';
+    setStatus('');
+  }
+
+  document.getElementById('hq').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      var v=this.value.trim();
+      if(v)window.location.href='smart_navigator_results.do?q='+encodeURIComponent(v);
+    }
+  });
+}
+
+window.go=go;
+init();
+})();
+</script>
+</body>
+</html>

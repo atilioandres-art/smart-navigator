@@ -14,50 +14,49 @@
 -->
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f4f6f8;min-height:100vh;font-size:16px}
-.hdr{background:#1d3557;color:#fff;padding:12px 24px;display:flex;align-items:center;gap:10px}
-.hdr h1{font-size:20px;font-weight:600}.hdr small{opacity:.6;font-size:14px}
-.wrap{max-width:820px;margin:24px auto;padding:0 16px}
-.card{background:#fff;border-radius:10px;box-shadow:0 1px 8px rgba(0,0,0,.1);padding:20px;margin-bottom:14px}
-#q{width:100%;font-size:21px;border:2px solid #d1d9e0;border-radius:8px;padding:12px 16px;outline:none;color:#1d2d35;transition:border .15s}
-#q:focus{border-color:#0070d2;box-shadow:0 0 0 3px rgba(0,112,210,.12)}
-.hint{font-size:13px;color:#8c9dab;margin-top:8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.chip{background:#f0f4f8;border:1px solid #d1d9e0;border-radius:20px;padding:6px 14px;font-size:15px;cursor:pointer;color:#2d3f50;white-space:nowrap;transition:all .1s}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,Arial,sans-serif;background:#f4f6f8;min-height:100vh;font-size:14px;color:#1b2a34}
+.hdr{background:#1d3557;color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px}
+.hdr h1{font-size:15px;font-weight:600}
+.wrap{max-width:820px;margin:10px auto;padding:0 12px}
+.card{background:#fff;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.08);padding:14px;margin-bottom:10px}
+#q{width:100%;font-size:15px;border:1.5px solid #d1d9e0;border-radius:6px;padding:8px 12px;outline:none;color:#1b2a34;transition:border .15s}
+#q:focus{border-color:#0070d2;box-shadow:0 0 0 2px rgba(0,112,210,.1)}
+.hint{font-size:12px;color:#8c98a4;margin-top:6px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.chip{background:#f0f4f8;border:1px solid #d1d9e0;border-radius:16px;padding:4px 10px;font-size:13px;cursor:pointer;color:#2d3f50;white-space:nowrap;transition:all .1s}
 .chip:hover{background:#0070d2;color:#fff;border-color:#0070d2}
-.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a0aab4;padding:10px 0 4px}
-.ri{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid #e5eaee;border-radius:8px;cursor:pointer;margin-bottom:5px;transition:all .1s}
+.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a0aab4;padding:8px 0 4px}
+.ri{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;border:1px solid #e5eaee;border-radius:7px;cursor:pointer;margin-bottom:4px;transition:all .1s}
 .ri:hover,.ri.sel{border-color:#0070d2;background:#f0f7ff}
-.ri-ico{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#f0f4f8}
+.ri-ico{width:28px;height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:#f0f4f8}
 .ri-body{flex:1;min-width:0}
-.ri-name{font-size:17px;font-weight:500;color:#1d2d35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ri-sub{font-size:13px;color:#8c9dab;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ri-badge{font-size:11px;padding:3px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;font-weight:600}
+.ri-name{font-size:14px;font-weight:500;color:#1b2a34;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-sub{font-size:12px;color:#6b778c;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-badge{font-size:10px;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;font-weight:600}
 .bj{background:#e6f4ea;color:#2e7d32}.bu{background:#e3f2fd;color:#1565c0}
 .bc{background:#fff3e0;color:#e65100}.bk{background:#f3e5f5;color:#6a1b9a}.bm{background:#e8f0fe;color:#3c6bc9}
-.ld{padding:10px 16px;font-size:13px;color:#8c9dab;display:flex;align-items:center;gap:8px}
-.sp{width:14px;height:14px;border:2px solid #d1d9e0;border-top-color:#0070d2;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+.ld{padding:8px 12px;font-size:12px;color:#8c98a4;display:flex;align-items:center;gap:7px}
+.sp{width:12px;height:12px;border:2px solid #d1d9e0;border-top-color:#0070d2;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:28px;color:#8c9dab;font-size:15px}
-.browse-btn{width:100%;background:none;border:1px dashed #cdd5dd;border-radius:8px;padding:9px 16px;font-size:14px;color:#4a6374;cursor:pointer;transition:all .1s;margin-top:4px}
+.empty{text-align:center;padding:22px;color:#8c98a4;font-size:13px}
+.browse-btn{width:100%;background:none;border:1px dashed #cdd5dd;border-radius:7px;padding:7px 14px;font-size:13px;color:#4a6374;cursor:pointer;transition:all .1s;margin-top:4px}
 .browse-btn:hover{background:#f0f4f8;border-color:#0070d2;color:#0070d2}
-.bcat{padding:7px 16px;background:#f8f9fb;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7c93;border-bottom:1px solid #eef0f3;border-top:1px solid #eef0f3;margin-top:4px}
-.bitem{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid #f0f2f5;cursor:pointer;font-size:15px;color:#2d3f50}
+.bcat{padding:6px 14px;background:#f8f9fb;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7c93;border-bottom:1px solid #eef0f3;border-top:1px solid #eef0f3;margin-top:3px}
+.bitem{display:flex;align-items:center;gap:7px;padding:8px 14px;border-bottom:1px solid #f0f2f5;cursor:pointer;font-size:13px;color:#2d3f50}
 .bitem:hover{background:#eef4fb;color:#0070d2}
-.sig-tag{display:inline-block;background:#e8f5e9;color:#2e7d32;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-right:4px}
 </style>
 </head>
 <body>
-<div class="hdr"><span style="font-size:22px">&#9889;</span><h1>Smart Navigator</h1><small>Semantic intent detection &bull; Searches modules, records, CIs, users &amp; knowledge in real time</small></div>
+<div class="hdr"><span style="font-size:18px">&#9889;</span><h1>Smart Navigator</h1></div>
 <div class="wrap">
 <div class="card">
-<input id="q" placeholder="Type anything: module, INC0001234, memory issue, deploy server, relationship on Portia..." autocomplete="off" spellcheck="false">
-<div class="hint">&#8593;&#8595; navigate &nbsp;&middot;&nbsp; Enter to open &nbsp;&middot;&nbsp; Detects: record#, names, emails, IPs, keywords &amp; context</div>
+<input id="q" placeholder="Module, INC0001234, memory issue, deploy server, portia relationships..." autocomplete="off" spellcheck="false">
+<div class="hint">&#8593;&#8595; navigate &nbsp;&middot;&nbsp; Enter to open</div>
 <div id="chips" class="chips"></div>
 </div>
 <div id="results"></div>
 <button class="browse-btn" id="bb" onclick="toggleBrowse()">&#9660; Browse all modules</button>
-<div id="browseDiv" style="background:#fff;border-radius:10px;box-shadow:0 1px 8px rgba(0,0,0,.1);margin-top:4px;display:none;overflow:hidden"></div>
+<div id="browseDiv" style="background:#fff;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-top:4px;display:none;overflow:hidden"></div>
 </div>
 <script>
 (function(){
@@ -143,14 +142,8 @@ function go(url){
 }
 
 // ============================================================
-// OPTION 1: Semantic signal vocabulary
-// Maps keyword clues to record types:
-//   "memory issue"            -> Incidents
-//   "deploy server"           -> Changes
-//   "root cause recurring"    -> Problems
-//   "relationship on Portia"  -> CMDB Relationships (CI extracted)
-//   "laptop warranty"         -> Assets
-//   "vpn access request"      -> Service Requests
+// Semantic signal vocabulary
+// Maps keyword clues to record types
 // ============================================================
 var SIG={
   inc:['incident','issue','error','crash','slow','memory leak','memory','cpu usage','cpu','performance','outage','degraded','alert','alarm','offline','failing','failed','broken','hung','frozen','not working','unavailable','service down','high cpu','high memory','disk full','disk space','timeout','exception','latency','spike','bottleneck','unresponsive','unreachable'],
@@ -175,7 +168,7 @@ function matchSigs(ql){
 }
 
 // Extract CI name from relationship queries:
-//   "portia relationships"        -> "portia"
+//   "portia relationships"          -> "portia"
 //   "relationship on Portia online" -> "Portia online"
 function extractRelCI(qt,ql){
   var m=qt.match(/\b(?:on|for|about|of)\s+([\w][\w\s.-]{1,40})$/i);
@@ -193,7 +186,7 @@ function extractEntity(qt){
 }
 
 // ============================================================
-// Intent detection — decides what to search based on text clues
+// Intent detection
 // ============================================================
 function detectIntents(q){
   var qt=q.trim(),ql=qt.toLowerCase(),intents=[];
@@ -203,7 +196,7 @@ function detectIntents(q){
   if(rm){var rk=rm[1].toUpperCase(),rn=rk+rm[2],rec=R[rk];
     if(rec){intents.push({id:'__rec',label:'Open '+rec.l+' '+rn,sub:'Direct record jump',url:rec.t+'_list.do?sysparm_query=number='+rn,badge:'Jump',bc:'bj',icon:'&#127919;',live:null});return intents;}}
 
-  // 2. Record prefix + optional partial digits (INC, CHG, INC004...)
+  // 2. Record prefix + optional partial digits
   var pm=qt.match(/^([A-Z]{2,8})(\d{0,3})$/i);
   if(pm){var pk=pm[1].toUpperCase(),pn=pm[2]||'',rec2=R[pk];
     if(rec2){
@@ -223,55 +216,56 @@ function detectIntents(q){
 
   // 3. Email address
   if(/^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i.test(qt)){
-    intents.push({id:'__email',label:'Find user: '+qt,sub:'Search by email address',url:'sys_user_list.do?sysparm_query=email='+encodeURIComponent(qt),badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'email='+encodeURIComponent(qt),fields:'name,email,title,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.email||'')+(r.title?' · '+r.title:'');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__email',label:'Find user: '+qt,sub:'Search by email address',url:'sys_user_list.do?sysparm_query=email='+encodeURIComponent(qt),badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'email='+encodeURIComponent(qt),fields:'name,email,title,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.email||'')+(r.title?' \u00b7 '+r.title:'');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
     return intents;}
 
   // 4. IP address
   if(/^\d{1,3}(\.\d{1,3}){3}/.test(qt)){
-    intents.push({id:'__ip',label:'Find CI with IP: '+qt,sub:'CMDB search by IP address',url:'cmdb_ci_list.do?sysparm_query=ip_addressLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'ip_addressLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.ip_address||'')+(r.sys_class_name?' · '+r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__ip',label:'Find CI with IP: '+qt,sub:'CMDB search by IP address',url:'cmdb_ci_list.do?sysparm_query=ip_addressLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'ip_addressLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){return (r.ip_address||'')+(r.sys_class_name?' \u00b7 '+r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
     return intents;}
 
   // 5. Question words -> knowledge base
   var isQ=/^(how|what|why|when|can|is|are|does|do|where|which|who)\b/i.test(ql);
   if(isQ){
-    intents.push({id:'__kb',label:'Search knowledge: "'+qt+'"',sub:'Knowledge base article search',url:'kb_knowledge_list.do?sysparm_query=textLIKE'+encodeURIComponent(qt)+'^workflow_state=published',badge:'KB',bc:'bk',icon:'&#128218;',live:{table:'kb_knowledge',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^workflow_state=published',fields:'short_description,number,category,sys_id',nm:function(r){return r.short_description||r.number;},sb:function(r){return (r.number||'')+(r.category?' · '+r.category:'');},ul:function(r){return 'kb_knowledge.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__kb',label:'Search knowledge: "'+qt+'"',sub:'Knowledge base article search',url:'kb_knowledge_list.do?sysparm_query=textLIKE'+encodeURIComponent(qt)+'^workflow_state=published',badge:'KB',bc:'bk',icon:'&#128218;',live:{table:'kb_knowledge',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^workflow_state=published',fields:'short_description,number,sys_id',nm:function(r){return r.short_description||r.number;},sb:function(r){return r.number||'';},ul:function(r){return 'kb_knowledge.do?sys_id='+r.sys_id;}}});
   }
 
-  // 6. Semantic signal matching (Option 1)
+  // 6. Semantic signal matching
   var sigs=matchSigs(ql);
   var entity=extractEntity(qt);
   var hasSigs=Object.keys(sigs).length>0;
 
-  if(sigs.inc){intents.push({id:'__inc',label:'Search Incidents: "'+qt+'"',sub:'&#129396; Detected signal: issue/error/performance/outage',url:'incident_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'INC',bc:'bj',icon:'&#128680;',live:{table:'incident',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,priority,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){var p=['Critical','High','Moderate','Low','Planning'];return 'Priority: '+(p[(parseInt(r.priority)||5)-1]||r.priority||'?');},ul:function(r){return 'incident.do?sys_id='+r.sys_id;}}});}
+  if(sigs.inc){intents.push({id:'__inc',label:'Search Incidents: "'+qt+'"',sub:'Signal: issue / error / performance / outage',url:'incident_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'INC',bc:'bj',icon:'&#128680;',live:{table:'incident',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,priority,sys_id',nm:function(r){return r.number+' \u2014 '+(r.short_description||'').substring(0,55);},sb:function(r){var p=['Critical','High','Moderate','Low','Planning'];return 'Priority: '+(p[(parseInt(r.priority)||5)-1]||r.priority||'?');},ul:function(r){return 'incident.do?sys_id='+r.sys_id;}}});}
 
-  if(sigs.chg){intents.push({id:'__chg',label:'Search Changes: "'+qt+'"',sub:'&#129396; Detected signal: deploy/maintenance/change/patch',url:'change_request_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'CHG',bc:'bc',icon:'&#128260;',live:{table:'change_request',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,type,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'Type: '+(r.type||'?');},ul:function(r){return 'change_request.do?sys_id='+r.sys_id;}}});}
+  if(sigs.chg){intents.push({id:'__chg',label:'Search Changes: "'+qt+'"',sub:'Signal: deploy / maintenance / patch / change',url:'change_request_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'CHG',bc:'bc',icon:'&#128260;',live:{table:'change_request',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,type,sys_id',nm:function(r){return r.number+' \u2014 '+(r.short_description||'').substring(0,55);},sb:function(r){return 'Type: '+(r.type||'?');},ul:function(r){return 'change_request.do?sys_id='+r.sys_id;}}});}
 
-  if(sigs.prb){intents.push({id:'__prb',label:'Search Problems: "'+qt+'"',sub:'&#129396; Detected signal: root cause/workaround/recurring',url:'problem_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'PRB',bc:'bc',icon:'&#9888;',live:{table:'problem',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'problem.do?sys_id='+r.sys_id;}}});}
+  if(sigs.prb){intents.push({id:'__prb',label:'Search Problems: "'+qt+'"',sub:'Signal: root cause / workaround / recurring',url:'problem_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'PRB',bc:'bc',icon:'&#9888;',live:{table:'problem',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' \u2014 '+(r.short_description||'').substring(0,55);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'problem.do?sys_id='+r.sys_id;}}});}
 
   if(sigs.rel){
     var relEntity=extractRelCI(qt,ql)||entity||'';
+    // Use parent/child display values — request parent,type,child and read via display_value
     var relQ=relEntity?'parent.nameLIKE'+encodeURIComponent(relEntity)+'^ORchild.nameLIKE'+encodeURIComponent(relEntity):'typeISNOTEMPTY';
     var relUrl='cmdb_rel_ci_list.do'+(relEntity?'?sysparm_query='+relQ:'');
-    intents.push({id:'__rel',label:relEntity?'CMDB Relationships for "'+relEntity+'"':'Browse CMDB Relationships',sub:relEntity?'&#129396; Topology/dependency — CI: '+relEntity:'&#129396; Detected signal: relationship/dependency/topology',url:relUrl,badge:'Rel',bc:'bk',icon:'&#128279;',live:{table:'cmdb_rel_ci',q:relQ,fields:'parent.name,type.name,child.name,sys_id',nm:function(r){return (r['parent.name']||'?')+' → '+(r['type.name']||'?')+' → '+(r['child.name']||'?');},sb:function(r){return 'CMDB Relationship';},ul:function(r){return 'cmdb_rel_ci.do?sys_id='+r.sys_id;}}});}
+    intents.push({id:'__rel',label:relEntity?'CMDB Relationships for "'+relEntity+'"':'Browse CMDB Relationships',sub:relEntity?'Topology / dependency \u2014 CI: '+relEntity:'Signal: relationship / dependency / topology',url:relUrl,badge:'Rel',bc:'bk',icon:'&#128279;',live:{table:'cmdb_rel_ci',q:relQ,fields:'parent.name,type.name,child.name,sys_id',nm:function(r){return (r['parent.name']||'?')+' \u2192 '+(r['type.name']||'?')+' \u2192 '+(r['child.name']||'?');},sb:function(){return 'CMDB Relationship';},ul:function(r){return 'cmdb_rel_ci.do?sys_id='+r.sys_id;}}});}
 
-  if(sigs.ast){intents.push({id:'__ast',label:'Search Assets: "'+qt+'"',sub:'&#129396; Detected signal: hardware/equipment/asset',url:'alm_asset_list.do?sysparm_query=display_nameLIKE'+encodeURIComponent(qt),badge:'Asset',bc:'bc',icon:'&#128230;',live:{table:'alm_asset',q:'display_nameLIKE'+encodeURIComponent(qt),fields:'display_name,asset_tag,state,sys_id',nm:function(r){return r.display_name||(r.asset_tag||'(no name)');},sb:function(r){return 'Tag: '+(r.asset_tag||'?')+' | State: '+(r.state||'?');},ul:function(r){return 'alm_asset.do?sys_id='+r.sys_id;}}});}
+  if(sigs.ast){intents.push({id:'__ast',label:'Search Assets: "'+qt+'"',sub:'Signal: hardware / equipment / asset',url:'alm_asset_list.do?sysparm_query=display_nameLIKE'+encodeURIComponent(qt),badge:'Asset',bc:'bc',icon:'&#128230;',live:{table:'alm_asset',q:'display_nameLIKE'+encodeURIComponent(qt),fields:'display_name,asset_tag,state,sys_id',nm:function(r){return r.display_name||(r.asset_tag||'(no name)');},sb:function(r){return 'Tag: '+(r.asset_tag||'?')+' | State: '+(r.state||'?');},ul:function(r){return 'alm_asset.do?sys_id='+r.sys_id;}}});}
 
   if(sigs.req||sigs.acc){
     var reqLabel=sigs.acc?'Search Access/Requests: "'+qt+'"':'Search Service Requests: "'+qt+'"';
-    var reqSub=sigs.acc?'&#129396; Detected signal: access/password/permission':'&#129396; Detected signal: request/provision/onboard';
-    intents.push({id:'__req',label:reqLabel,sub:reqSub,url:'sc_req_item_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'RITM',bc:'bu',icon:'&#128203;',live:{table:'sc_req_item',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' — '+(r.short_description||'').substring(0,58);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'sc_req_item.do?sys_id='+r.sys_id;}}});}
+    var reqSub=sigs.acc?'Signal: access / password / permission':'Signal: request / provision / onboard';
+    intents.push({id:'__req',label:reqLabel,sub:reqSub,url:'sc_req_item_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',badge:'RITM',bc:'bu',icon:'&#128203;',live:{table:'sc_req_item',q:'short_descriptionLIKE'+encodeURIComponent(qt)+'^active=true',fields:'number,short_description,state,sys_id',nm:function(r){return r.number+' \u2014 '+(r.short_description||'').substring(0,55);},sb:function(r){return 'State: '+(r.state||'?');},ul:function(r){return 'sc_req_item.do?sys_id='+r.sys_id;}}});}
 
   // No semantic signals -> CI + user defaults
   if(!hasSigs){
-    intents.push({id:'__ci',label:'Search CIs: "'+qt+'"',sub:'CMDB configuration item name search',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' · '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__ci',label:'Search CIs: "'+qt+'"',sub:'CMDB configuration item name search',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(qt),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' \u00b7 '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
     var isNm=/^[a-zA-Z][a-zA-Z'-]+(\s+[a-zA-Z][a-zA-Z'-]+){1,2}$/.test(qt)&&!isQ;
-    intents.push({id:'__user',label:'Search users: "'+qt+'"',sub:isNm?'Name detected — searching active users':'Active user search',url:'sys_user_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt)+'^active=true',badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'nameLIKE'+encodeURIComponent(qt)+'^active=true',fields:'name,email,title,department,sys_id',nm:function(r){return r.name;},sb:function(r){var p=[];if(r.title)p.push(r.title);if(r.department)p.push(r.department);if(r.email)p.push(r.email);return p.join(' · ');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__user',label:'Search users: "'+qt+'"',sub:isNm?'Name detected \u2014 searching active users':'Active user search',url:'sys_user_list.do?sysparm_query=nameLIKE'+encodeURIComponent(qt)+'^active=true',badge:'User',bc:'bu',icon:'&#128100;',live:{table:'sys_user',q:'nameLIKE'+encodeURIComponent(qt)+'^active=true',fields:'name,email,title,department,sys_id',nm:function(r){return r.name;},sb:function(r){var p=[];if(r.title)p.push(r.title);if(r.department)p.push(r.department);if(r.email)p.push(r.email);return p.join(' \u00b7 ');},ul:function(r){return 'sys_user.do?sys_id='+r.sys_id;}}});
   } else if(entity){
-    intents.push({id:'__ci_ent',label:'Search CIs: "'+entity+'"',sub:'CI extracted from query context',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(entity),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(entity),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' · '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
+    intents.push({id:'__ci_ent',label:'Search CIs: "'+entity+'"',sub:'CI extracted from query context',url:'cmdb_ci_list.do?sysparm_query=nameLIKE'+encodeURIComponent(entity),badge:'CI',bc:'bc',icon:'&#128187;',live:{table:'cmdb_ci',q:'nameLIKE'+encodeURIComponent(entity),fields:'name,sys_class_name,ip_address,sys_id',nm:function(r){return r.name;},sb:function(r){var t=r.sys_class_name?r.sys_class_name.replace('cmdb_ci_','').replace(/_/g,' '):'CI';return t+(r.ip_address?' \u00b7 '+r.ip_address:'');},ul:function(r){return 'cmdb_ci.do?sys_id='+r.sys_id;}}});
   }
 
-  // Option 3: Global Search fallback (always shown)
-  intents.push({id:'__global',label:'Search everywhere: "'+qt+'"',sub:'Global search across all tables — incidents, changes, CIs, knowledge &amp; more',url:'task_list.do?sysparm_query=short_descriptionLIKE'+encodeURIComponent(qt)+'^ORdescriptionLIKE'+encodeURIComponent(qt),badge:'All',bc:'bm',icon:'&#127757;',live:{isGlobal:true,q:qt}});
+  // Search everywhere — opens dedicated results page
+  intents.push({id:'__global',label:'Search everywhere: "'+qt+'"',sub:'Results across incidents, changes, CIs, knowledge &amp; more',url:'smart_navigator_results.do?q='+encodeURIComponent(qt),badge:'All',bc:'bm',icon:'&#127757;',live:null});
 
   return intents;
 }
@@ -342,14 +336,13 @@ function renderAll(q,intents,mods){
     });
   }
   if(!h)h='<div class="empty">No results &mdash; try a different keyword or type INC/CHG/PRB + number.</div>';
+
+  // Live result placeholders — only for intents with live config
   var livePH='';
   intents.forEach(function(it){
-    if(it.live){
-      var lid='lv_'+it.id.replace(/__/g,'').replace(/_/g,'');
-      livePH+=it.live.isGlobal
-        ?'<div id="'+lid+'"><div class="ld"><div class="sp"></div>Searching across all tables...</div></div>'
-        :'<div id="'+lid+'"><div class="ld"><div class="sp"></div>Searching '+it.badge+' records...</div></div>';
-    }
+    if(!it.live)return;
+    var lid='lv_'+it.id.replace(/__/g,'').replace(/_/g,'');
+    livePH+='<div id="'+lid+'"><div class="ld"><div class="sp"></div>Searching '+it.badge+' records...</div></div>';
   });
   if(livePH)h+='<div class="sec">&#128269; Live Results</div>'+livePH;
   document.getElementById('results').innerHTML=h;
@@ -357,9 +350,14 @@ function renderAll(q,intents,mods){
 }
 
 function fetchLive(q,it){
-  if(!it.live||it.live.isGlobal)return;
+  if(!it.live)return;
   var lid='lv_'+it.id.replace(/__/g,'').replace(/_/g,'');
-  var url='/api/now/table/'+it.live.table+'?sysparm_query='+it.live.q+'&sysparm_limit=5&sysparm_fields='+it.live.fields+'&sysparm_display_value=true';
+  var url='/api/now/table/'+it.live.table
+    +'?sysparm_query='+it.live.q
+    +'&sysparm_limit=5'
+    +'&sysparm_fields='+it.live.fields
+    +'&sysparm_display_value=true'
+    +'&sysparm_exclude_reference_link=true';
   var xhr=new XMLHttpRequest();
   xhr.open('GET',url,true);
   xhr.setRequestHeader('Accept','application/json');
@@ -370,7 +368,7 @@ function fetchLive(q,it){
     if(xhr.status===200){
       var data;try{data=JSON.parse(xhr.responseText);}catch(e){el.innerHTML='';return;}
       var recs=(data&&data.result)||[];
-      if(!recs.length){el.innerHTML='<div class="ld" style="color:#c0c7cf">No '+it.badge+' records found</div>';return;}
+      if(!recs.length){el.innerHTML='<div class="ld" style="color:#b0bec5">No '+it.badge+' records found</div>';return;}
       var h='',bc=it.bc;
       var borderMap={bj:'#2e7d32',bu:'#1565c0',bc:'#e65100',bk:'#6a1b9a',bm:'#3c6bc9'};
       var border=borderMap[bc]||'#607d8b';
@@ -383,49 +381,9 @@ function fetchLive(q,it){
         h+='<div class="ri-badge '+bc+'">'+it.badge+'</div></div>';
       });
       el.innerHTML=h;
-    }else{el.innerHTML='';}
-  };
-  xhr.send();
-}
-
-// Option 3: Global Text Search API
-function fetchGlobalSearch(q){
-  var lid='lv_global';
-  var url='/api/now/globalsearch/search?sysparm_search='+encodeURIComponent(q)+'&sysparm_limit=10';
-  var xhr=new XMLHttpRequest();
-  xhr.open('GET',url,true);
-  xhr.setRequestHeader('Accept','application/json');
-  xhr.onreadystatechange=function(){
-    if(xhr.readyState!==4||q!==curQ)return;
-    var el=document.getElementById(lid);
-    if(!el)return;
-    if(xhr.status===200){
-      var data;try{data=JSON.parse(xhr.responseText);}catch(e){el.innerHTML='';return;}
-      var groups=[];
-      if(data&&data.result&&data.result.groups){groups=data.result.groups;}
-      else if(data&&data.result&&Array.isArray(data.result)){groups=data.result;}
-      groups=groups.filter(function(g){return g.result&&g.result.length>0;});
-      if(!groups.length){el.innerHTML='<div class="ld" style="color:#c0c7cf">No results found across all tables</div>';return;}
-      var h='';
-      groups.forEach(function(g){
-        var grecs=g.result||[];
-        var gname=g.name||g.label||'Records';
-        h+='<div style="padding:4px 16px 2px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7c93;border-top:1px solid #f0f2f5;margin-top:4px">'+gname+'</div>';
-        grecs.slice(0,4).forEach(function(rec){
-          var rIdx=lr.length;
-          var rUrl=(rec.record_url||rec.url||'').replace(/^\//,'');
-          if(!rUrl&&rec.table&&rec.sys_id){rUrl=rec.table+'.do?sys_id='+rec.sys_id;}
-          lr.push(['__gs'+rIdx,rUrl]);
-          h+='<div class="ri" onclick="goI('+rIdx+')" style="border-left:3px solid #3c6bc9">';
-          h+='<div class="ri-ico" style="font-size:14px">&#127757;</div>';
-          h+='<div class="ri-body"><div class="ri-name">'+(rec.name||'(no name)')+'</div><div class="ri-sub">'+(rec.table?rec.table.replace(/_/g,' '):gname)+'</div></div>';
-          h+='<div class="ri-badge bm">'+gname.substring(0,10)+'</div></div>';
-        });
-      });
-      el.innerHTML=h;
-    }else if(xhr.status===404||xhr.status===403){
-      el.innerHTML='<div class="ld" style="color:#c0c7cf">Global search API not available — use the search bar at the top of ServiceNow</div>';
-    }else{el.innerHTML='';}
+    }else{
+      el.innerHTML='<div class="ld" style="color:#b0bec5">Could not load live results ('+xhr.status+')</div>';
+    }
   };
   xhr.send();
 }
@@ -442,9 +400,7 @@ document.getElementById('q').addEventListener('input',function(){
   liveTimer=setTimeout(function(){
     if(q!==curQ)return;
     intents.forEach(function(it){
-      if(!it.live)return;
-      if(it.live.isGlobal){fetchGlobalSearch(q);}
-      else{fetchLive(q,it);}
+      if(it.live)fetchLive(q,it);
     });
   },400);
 });

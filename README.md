@@ -23,8 +23,10 @@ Intelligent search and navigation tool for ServiceNow Next Experience (Polaris /
 
 | Artifact | Table | sys_id | Purpose |
 |---|---|---|---|
-| `smart_navigator` | `sys_ui_page` | `58acb83dcf7bba948ace75c42d851c27` | HTML/CSS/JS page |
-| `smart_navigator` | `sys_processor` | `e1135575cff7fa948ace75c42d851cda` | Serves page at `/smart_navigator_v2.do` |
+| `smart_navigator` | `sys_ui_page` | `58acb83dcf7bba948ace75c42d851c27` | Main navigator HTML/CSS/JS |
+| `smart_navigator` | `sys_processor` | `e1135575cff7fa948ace75c42d851cda` | Serves navigator at `/smart_navigator_v2.do` |
+| `smart_navigator_results` | `sys_ui_page` | *(create new)* | Search results page HTML/CSS/JS |
+| `smart_navigator_results` | `sys_processor` | *(create new)* | Serves results at `/smart_navigator_results.do` |
 | `Smart Navigator` | `sys_app_module` | `8dbcb47dcf7bba948ace75c42d851c0c` | Left nav menu item |
 | `SmartNavigatorLauncher` | `sys_ui_script` | `dd19eef5933fbad430d2f7e03603d68c` | Floating button (Classic UI only) |
 
@@ -34,11 +36,28 @@ Intelligent search and navigation tool for ServiceNow Next Experience (Polaris /
 
 ```
 servicenow/
-  sys_ui_page__smart_navigator.html        ← Main page (deploy to sys_ui_page.html)
-  sys_processor__smart_navigator_v2.js     ← Processor script
-  sys_ui_script__SmartNavigatorLauncher.js ← Floating button (Classic UI)
-bookmarklet__smart_navigator_launcher.js   ← Floating panel for Next Experience
+  sys_ui_page__smart_navigator.html         ← Main navigator page (deploy to sys_ui_page.html)
+  sys_processor__smart_navigator_v2.js      ← Processor for navigator
+  sys_ui_page__smart_navigator_results.html ← Search results page (deploy to sys_ui_page.html)
+  sys_processor__smart_navigator_results.js ← Processor for results page
+  sys_ui_script__SmartNavigatorLauncher.js  ← Floating button (Classic UI only)
+bookmarklet__smart_navigator_launcher.js    ← Floating panel for Next Experience
 ```
+
+## Deploying the Results Page
+
+1. Go to **System UI → UI Pages** → New
+2. Name: `smart_navigator_results`
+3. HTML field: paste content of `sys_ui_page__smart_navigator_results.html`
+4. Save
+
+5. Go to **System Web Services → Processors** → New
+6. Name: `smart_navigator_results`
+7. Path: `smart_navigator_results`
+8. Script: paste content of `sys_processor__smart_navigator_results.js`
+9. Save
+
+Accessible at: `https://zurichandres.service-now.com/smart_navigator_results.do?q=<search term>`
 
 ## Accessing Smart Navigator
 
