@@ -168,9 +168,6 @@ function renderGroups(groups,q,isFallback){
   });
 
   el.innerHTML=h||'<div class="empty"><div class="empty-icon">&#128269;</div>No results found.</div>';
-  if(isFallback){
-    el.innerHTML+='<div class="fallback-note">Using direct table search &mdash; Global Search API unavailable on this instance</div>';
-  }
 }
 
 function globalSearch(q){
@@ -261,7 +258,7 @@ function init(){
   if(q){
     document.getElementById('hq').value=q;
     document.title='Results: '+q+' \u2014 Smart Navigator';
-    globalSearch(q);
+    fallbackSearch(q);
   }else{
     document.getElementById('results').innerHTML='<div class="empty"><div class="empty-icon">&#128269;</div>Enter a search term above.</div>';
     setStatus('');
